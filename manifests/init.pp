@@ -24,7 +24,9 @@ class profile_jjb(
     command     => "jenkins-jobs update ${tmp_path}/${pipeline}",
     path        => '/usr/bin:/usr/sbin:/bin:/usr/local/bin',
     refreshonly => true,
-    require     => Class['profile_jenkins', 'jjb'],
+    tries       => 90,
+    try_sleep   => 1,
+    require     => [Class['profile_jenkins', 'jjb'], Class['jenkins::service']],
   }
 
 }
