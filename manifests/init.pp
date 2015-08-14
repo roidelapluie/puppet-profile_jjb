@@ -9,10 +9,26 @@ class profile_jjb(
       ensure => installed,
   }
 
+  package{
+    'ruby-devel':
+      ensure => installed,
+  } ->
+  package{
+    'rubygems':
+      ensure => installed,
+  } ->
+  package {
+    'fpm':
+      ensure   => installed,
+      provider => 'gem',
+  }
+
   include jjb
 
   Package['git'] -> Class['jjb::python']
 
+  Package['git'] -> Exec["Pipeline $pipeline"]
+  Package['fpm'] -> Exec["Pipeline $pipeline"]
   vcsrepo {
     "${tmp_path}/${pipeline}":
       ensure   => latest,
@@ -21,7 +37,7 @@ class profile_jjb(
   }
   ~>
   exec { "Pipeline $pipeline":
-    command     => "jenkins-jobs update ${tmp_path}/${pipeline}",
+    command     => "jenkins-jobs update -r ${tmp_path}/${pipeline}",
     path        => '/usr/bin:/usr/sbin:/bin:/usr/local/bin',
     refreshonly => true,
     tries       => 90,
