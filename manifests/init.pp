@@ -22,6 +22,10 @@ class profile_jjb(
       ensure   => installed,
       provider => 'gem',
   }
+  package {
+    'rpm-build':
+      ensure   => installed,
+  }
 
   include jjb
 
